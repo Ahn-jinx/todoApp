@@ -1,15 +1,17 @@
 import React,{Component} from 'react';
-import {Text, View, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput} from 'react-native';
 
 export default class ToDo extends Component{
     constructor(props){
         super(props);
 
-    }
+    };
 
     state = {
         isCompleted: false,
         isEditing: false,
+        todoValue: this.props.content,
+        pressDelete: false,
     };
 
     _toggle=()=>{
@@ -19,30 +21,43 @@ export default class ToDo extends Component{
     };
 
     _startEditing =()=>{
-        this.setState({isEditing: true})
+        const {content} = this.props;
+        this.setState({isEditing: true, todoValue: content})
     }
 
     _endEditing = () => {
+        const {content} = this.props;
         this.setState({isEditing: false})
     }
 
+    _changeTodoValue = (text) => {
+        this.setState({todoValue: text})
+    }
+
+    _deleteTodo = () => {
+        this.setState({pressDelete: true})
+    }
+
     render(){
-        const {isEditing} = this.state;
+        const {isEditing, todoValue, pressDelete} = this.state;
         return(
-            <View style={styles.container}>
+            <View style={pressDelete===false? styles.container : styles.bye}>
                 <View style={styles.column}>
                     <TouchableOpacity style={[styles.touch, this.state.isCompleted===true? styles.touchCompleted : styles.touchUn]} onPress={this._toggle}></TouchableOpacity>
+                    {isEditing===true?
+                    <TextInput value={todoValue} onChangeText={this._changeTodoValue} style={[styles.inputMode, this.state.isCompleted===true? styles.textCompleted : styles.textUn]} multiline={true} ></TextInput> :   
+                
                     <Text style={[styles.contentText, this.state.isCompleted===true? styles.textCompleted : styles.textUn]}>
-                        {this.props.content}
-                    </Text>
+                        {todoValue}
+                    </Text>}
                 </View>
 
                 
-                    {isEditing===false? 
+                    {isEditing===true? 
                     <View style={styles.action}>
-                        <TouchableOpacity onPressOut={this._startEditing} style={styles.editBtn}>
+                        <TouchableOpacity onPressOut={this._endEditing} style={styles.editBtn}>
                             <View>
-                                <Text style={styles.editText}>★</Text>
+                                <Text style={styles.editText}>Done</Text>
                          </View>
                         </TouchableOpacity>
                     </View> 
@@ -55,9 +70,9 @@ export default class ToDo extends Component{
                                 <Text style={styles.editText}>Edit</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPressOut={this._endEditing} style={styles.editBtn}>
+                        <TouchableOpacity style={styles.editBtn}>
                            <View>
-                                <Text style={styles.editText}>X</Text>
+                                <Text style={styles.editText} onPressOut={this._deleteTodo}>Delete</Text>
                            </View>
                         </TouchableOpacity>
                     </View>
@@ -83,10 +98,21 @@ const styles = StyleSheet.create({
             padding: 5,
         },
 
-        column: {
+        bye: {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
+            marginTop: 10,
+            marginBottom: 30,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: '#bbb',
+            padding: 5,
+            display: 'none',
+        },
+
+        column: {
+            flexDirection: 'row',
+            alignItems: 'center',
             width: width/2,
         },
 
@@ -122,6 +148,7 @@ const styles = StyleSheet.create({
             borderRadius: 14,
             width: 28,
             height: 28,
+            marginRight: 12,
         },
 
         touchUn: {
@@ -130,6 +157,7 @@ const styles = StyleSheet.create({
             borderRadius: 14,
             width: 28,
             height: 28,
+            marginRight: 12,
         },
 
         touchCompleted: {
@@ -138,6 +166,10 @@ const styles = StyleSheet.create({
             borderRadius: 14,
             width: 28,
             height: 28,
+            marginRight: 12,
         },
 
+        inputMode: {
+            width: width/2,
+        },
     })

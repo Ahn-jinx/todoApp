@@ -14,6 +14,7 @@ export default class App extends Component{
 
   showTodo = () => {
     this.setState({gotTodo: this.state.gotTodo.concat(this.state.newTodo)})
+    this.setState({newTodo: ''})
     
   }
   
@@ -29,7 +30,7 @@ export default class App extends Component{
           placeholder={'Make your own day :)'} 
           style={styles.input}
           onChangeText={this.storeTodo}
-          onEndEditing={this.showTodo}
+          onSubmitEditing={this.showTodo}
           value = {newTodo}
           returnKeyType = {'done'}
           ></TextInput>
